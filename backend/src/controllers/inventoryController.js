@@ -8,6 +8,7 @@ import {
   getRestockRecommendations,
   updateInventoryQuantity
 } from "../inventory/inventoryService.js";
+import ApiResponse from "../utils/ApiResponse.js";
 
 export const getInventory = async (req, res, next) => {
   try {
@@ -16,7 +17,7 @@ export const getInventory = async (req, res, next) => {
       status: req.query.status
     });
 
-    res.json({ success: true, data });
+    ApiResponse.success(res, { message: "Inventory products loaded successfully", data });
   } catch (error) {
     next(error);
   }
@@ -25,7 +26,7 @@ export const getInventory = async (req, res, next) => {
 export const getStatistics = async (req, res, next) => {
   try {
     const data = await getInventoryStatistics();
-    res.json({ success: true, data });
+    ApiResponse.success(res, { message: "Inventory statistics loaded successfully", data });
   } catch (error) {
     next(error);
   }
@@ -38,7 +39,7 @@ export const getSummary = async (req, res, next) => {
       status: req.query.status
     });
 
-    res.json({ success: true, data });
+    ApiResponse.success(res, { message: "Inventory summary loaded successfully", data });
   } catch (error) {
     next(error);
   }
@@ -47,7 +48,7 @@ export const getSummary = async (req, res, next) => {
 export const getLowStock = async (req, res, next) => {
   try {
     const data = await getLowStockProducts();
-    res.json({ success: true, data });
+    ApiResponse.success(res, { message: "Low-stock products loaded successfully", data });
   } catch (error) {
     next(error);
   }
@@ -56,7 +57,7 @@ export const getLowStock = async (req, res, next) => {
 export const getOutOfStock = async (req, res, next) => {
   try {
     const data = await getOutOfStockProducts();
-    res.json({ success: true, data });
+    ApiResponse.success(res, { message: "Out-of-stock products loaded successfully", data });
   } catch (error) {
     next(error);
   }
@@ -65,7 +66,7 @@ export const getOutOfStock = async (req, res, next) => {
 export const getAlerts = async (req, res, next) => {
   try {
     const data = await getInventoryAlerts();
-    res.json({ success: true, data });
+    ApiResponse.success(res, { message: "Inventory alerts loaded successfully", data });
   } catch (error) {
     next(error);
   }
@@ -74,7 +75,7 @@ export const getAlerts = async (req, res, next) => {
 export const getRecommendations = async (req, res, next) => {
   try {
     const data = await getRestockRecommendations();
-    res.json({ success: true, data });
+    ApiResponse.success(res, { message: "Restock recommendations loaded successfully", data });
   } catch (error) {
     next(error);
   }
@@ -87,7 +88,7 @@ export const updateQuantity = async (req, res, next) => {
       stock: req.body.stock
     });
 
-    res.json({ success: true, data });
+    ApiResponse.success(res, { message: "Inventory quantity updated successfully", data });
   } catch (error) {
     next(error);
   }

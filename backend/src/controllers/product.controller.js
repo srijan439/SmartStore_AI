@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
 import Product from "../models/Product.js";
+import ApiError from "../utils/ApiError.js";
+import ApiResponse from "../utils/ApiResponse.js";
 
 const ensureDatabaseReady = () => {
   if (mongoose.connection.readyState !== 1) {
-    const error = new Error("Database connection is required for product management");
-    error.statusCode = 503;
-    throw error;
+    throw new ApiError(503, "Database connection is required for product management");
   }
 };
 
@@ -36,7 +36,10 @@ export const listProducts = async (req, res, next) => {
     const filter = buildProductFilter(req.query);
     const products = await Product.find(filter).sort({ createdAt: -1 });
 
-    res.json({ success: true, data: products.map((product) => product.toClientJSON()) });
+    ApiResponse.success(res, {
+      message: "Products loaded successfully",
+      data: products.map((product) => product.toClientJSON())
+    });
   } catch (error) {
     next(error);
   }
@@ -47,7 +50,11 @@ export const createProduct = async (req, res, next) => {
     ensureDatabaseReady();
 
     const product = await Product.create(req.body);
-    res.status(201).json({ success: true, data: product.toClientJSON() });
+    ApiResponse.success(res, {
+      statusCode: 201,
+      message: "Product created successfully",
+      data: product.toClientJSON()
+    });
   } catch (error) {
     next(error);
   }
@@ -63,10 +70,13 @@ export const updateProduct = async (req, res, next) => {
     });
 
     if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found" });
+      throw new ApiError(404, "Product not found");
     }
 
-    return res.json({ success: true, data: product.toClientJSON() });
+    return ApiResponse.success(res, {
+      message: "Product updated successfully",
+      data: product.toClientJSON()
+    });
   } catch (error) {
     return next(error);
   }
@@ -79,10 +89,13 @@ export const deleteProduct = async (req, res, next) => {
     const product = await Product.findByIdAndDelete(req.params.id);
 
     if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found" });
+      throw new ApiError(404, "Product not found");
     }
 
-    return res.json({ success: true, data: { id: req.params.id } });
+    return ApiResponse.success(res, {
+      message: "Product deleted successfully",
+      data: { id: req.params.id }
+    });
   } catch (error) {
     return next(error);
   }

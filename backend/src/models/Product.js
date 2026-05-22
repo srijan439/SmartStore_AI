@@ -50,6 +50,8 @@ const productSchema = new mongoose.Schema(
 );
 
 productSchema.index({ name: "text", description: "text", category: "text" });
+productSchema.index({ status: 1, category: 1, createdAt: -1 });
+productSchema.index({ stock: 1, updatedAt: -1 });
 
 productSchema.methods.toClientJSON = function toClientJSON() {
   return {

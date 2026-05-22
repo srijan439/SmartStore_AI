@@ -11,6 +11,7 @@ import {
   getSummary,
   updateQuantity
 } from "../controllers/inventoryController.js";
+import asyncHandler from "../middleware/asyncHandler.js";
 import { validateRequest } from "../middleware/validation.middleware.js";
 
 const router = Router();
@@ -21,19 +22,19 @@ const listValidation = [
   query("status").optional({ values: "falsy" }).isIn(stockStatuses).withMessage("Invalid inventory status")
 ];
 
-router.get("/", listValidation, validateRequest, getInventory);
-router.get("/summary", listValidation, validateRequest, getSummary);
-router.get("/statistics", getStatistics);
-router.get("/low-stock", getLowStock);
-router.get("/out-of-stock", getOutOfStock);
-router.get("/alerts", getAlerts);
-router.get("/restock-recommendations", getRecommendations);
+router.get("/", listValidation, validateRequest, asyncHandler(getInventory));
+router.get("/summary", listValidation, validateRequest, asyncHandler(getSummary));
+router.get("/statistics", asyncHandler(getStatistics));
+router.get("/low-stock", asyncHandler(getLowStock));
+router.get("/out-of-stock", asyncHandler(getOutOfStock));
+router.get("/alerts", asyncHandler(getAlerts));
+router.get("/restock-recommendations", asyncHandler(getRecommendations));
 router.patch(
   "/:id/quantity",
   param("id").isMongoId().withMessage("Invalid product id"),
   body("stock").isInt({ min: 0, max: 1000000 }).withMessage("Stock must be a non-negative integer"),
   validateRequest,
-  updateQuantity
+  asyncHandler(updateQuantity)
 );
 
 export default router;

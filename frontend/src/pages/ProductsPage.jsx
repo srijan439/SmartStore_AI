@@ -8,6 +8,7 @@ import PageHeader from "../components/common/PageHeader.jsx";
 import DashboardCard from "../components/dashboard/DashboardCard.jsx";
 import ProductFormModal from "../components/products/ProductFormModal.jsx";
 import ProductTable from "../components/products/ProductTable.jsx";
+import { useToast } from "../components/ui/Toast.jsx";
 
 const getErrorMessage = (error, fallback) => {
   return error.response?.data?.message || error.response?.data?.errors?.[0]?.msg || fallback;
@@ -24,6 +25,7 @@ const ProductsPage = () => {
   const [status, setStatus] = useState("");
   const [category, setCategory] = useState("");
   const [modal, setModal] = useState({ open: false, mode: "create", product: null });
+  const toast = useToast();
 
   const categories = useMemo(() => {
     return [...new Set(products.map((product) => product.category).filter(Boolean))].sort();
@@ -105,9 +107,16 @@ const ProductsPage = () => {
 
         return [savedProduct, ...current];
       });
+      toast.showToast({
+        type: "success",
+        title: modal.mode === "edit" ? "Product updated" : "Product created",
+        message: `${savedProduct.name} is now saved in your catalog.`
+      });
       closeModal();
     } catch (requestError) {
-      setFormError(getErrorMessage(requestError, "Product could not be saved. Check the fields and try again."));
+      const message = getErrorMessage(requestError, "Product could not be saved. Check the fields and try again.");
+      setFormError(message);
+      toast.showToast({ type: "error", title: "Save failed", message });
     } finally {
       setSubmitting(false);
     }
@@ -126,8 +135,11 @@ const ProductsPage = () => {
     try {
       await deleteProduct(product.id);
       setProducts((current) => current.filter((item) => item.id !== product.id));
+      toast.showToast({ type: "success", title: "Product deleted", message: `${product.name} was removed.` });
     } catch (requestError) {
-      setError(getErrorMessage(requestError, "Product could not be deleted. Try again."));
+      const message = getErrorMessage(requestError, "Product could not be deleted. Try again.");
+      setError(message);
+      toast.showToast({ type: "error", title: "Delete failed", message });
     } finally {
       setDeletingId("");
     }

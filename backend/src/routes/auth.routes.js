@@ -1,15 +1,21 @@
 import { Router } from "express";
-import { body, validationResult } from "express-validator";
+import { body } from "express-validator";
 import mongoose from "mongoose";
 
 import { requireAuth, signAuthToken } from "../middleware/auth.middleware.js";
+import asyncHandler from "../middleware/asyncHandler.js";
+import { authRateLimiter } from "../middleware/rateLimiter.js";
+import { validateRequest } from "../middleware/validateRequest.js";
 import User from "../models/User.js";
+import ApiError from "../utils/ApiError.js";
+import ApiResponse from "../utils/ApiResponse.js";
 
 const router = Router();
 
 const sendAuthResponse = (res, user, status = 200) => {
-  return res.status(status).json({
-    success: true,
+  return ApiResponse.success(res, {
+    statusCode: status,
+    message: "Authentication successful",
     data: {
       user: user.toPublicJSON(),
       token: signAuthToken(user)
@@ -21,76 +27,59 @@ const isDatabaseReady = () => mongoose.connection.readyState === 1;
 
 router.post(
   "/signup",
+  authRateLimiter,
   [
     body("name").trim().isLength({ min: 2 }).withMessage("Name must be at least 2 characters"),
     body("email").trim().isEmail().withMessage("A valid email is required").normalizeEmail(),
     body("password").isLength({ min: 8 }).withMessage("Password must be at least 8 characters")
   ],
-  async (req, res, next) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ success: false, errors: errors.array() });
+  validateRequest,
+  asyncHandler(async (req, res) => {
+    if (!isDatabaseReady()) {
+      throw new ApiError(503, "Database connection is required for signup");
     }
 
-    try {
-      if (!isDatabaseReady()) {
-        return res.status(503).json({ success: false, message: "Database connection is required for signup" });
-      }
+    const { name, email, password } = req.body;
+    const existingUser = await User.findOne({ email });
 
-      const { name, email, password } = req.body;
-      const existingUser = await User.findOne({ email });
-
-      if (existingUser) {
-        return res.status(409).json({ success: false, message: "An account already exists for this email" });
-      }
-
-      const user = await User.create({ name, email, password });
-      return sendAuthResponse(res, user, 201);
-    } catch (error) {
-      if (error.code === 11000) {
-        return res.status(409).json({ success: false, message: "An account already exists for this email" });
-      }
-
-      return next(error);
+    if (existingUser) {
+      throw new ApiError(409, "An account already exists for this email");
     }
-  }
+
+    const user = await User.create({ name, email, password });
+    return sendAuthResponse(res, user, 201);
+  })
 );
 
 router.post(
   "/login",
+  authRateLimiter,
   [
     body("email").trim().isEmail().withMessage("A valid email is required").normalizeEmail(),
     body("password").notEmpty().withMessage("Password is required")
   ],
-  async (req, res, next) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ success: false, errors: errors.array() });
+  validateRequest,
+  asyncHandler(async (req, res) => {
+    if (!isDatabaseReady()) {
+      throw new ApiError(503, "Database connection is required for login");
     }
 
-    try {
-      if (!isDatabaseReady()) {
-        return res.status(503).json({ success: false, message: "Database connection is required for login" });
-      }
+    const user = await User.findOne({ email: req.body.email }).select("+password");
+    const isValidPassword = user ? await user.comparePassword(req.body.password) : false;
 
-      const user = await User.findOne({ email: req.body.email }).select("+password");
-      const isValidPassword = user ? await user.comparePassword(req.body.password) : false;
-
-      if (!user || !isValidPassword) {
-        return res.status(401).json({ success: false, message: "Invalid email or password" });
-      }
-
-      return sendAuthResponse(res, user);
-    } catch (error) {
-      return next(error);
+    if (!user || !isValidPassword) {
+      throw new ApiError(401, "Invalid email or password");
     }
-  }
+
+    return sendAuthResponse(res, user);
+  })
 );
 
 router.get("/me", requireAuth, (req, res) => {
-  res.json({ success: true, data: { user: req.user } });
+  ApiResponse.success(res, {
+    message: "Current user loaded successfully",
+    data: { user: req.user }
+  });
 });
 
 export default router;

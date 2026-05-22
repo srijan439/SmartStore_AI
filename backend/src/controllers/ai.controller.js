@@ -1,4 +1,5 @@
 import { generateAIContent } from "../ai/aiService.js";
+import ApiResponse from "../utils/ApiResponse.js";
 
 const sanitizeProductInput = (body) => {
   return {
@@ -18,7 +19,10 @@ export const generateContent = async (req, res, next) => {
       product: sanitizeProductInput(req.body)
     });
 
-    res.json({ success: true, data });
+    ApiResponse.success(res, {
+      message: "AI content generated successfully",
+      data
+    });
   } catch (error) {
     next(error);
   }
