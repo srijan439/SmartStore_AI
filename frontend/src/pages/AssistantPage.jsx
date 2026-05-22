@@ -34,6 +34,14 @@ const initialForm = {
 };
 
 const getErrorMessage = (error) => {
+  if (error.code === "ECONNABORTED") {
+    return "AI generation timed out. Try again in a moment or generate one content type at a time.";
+  }
+
+  if (!error.response) {
+    return "AI service is not reachable. Make sure the backend server is running.";
+  }
+
   return error.response?.data?.message || error.response?.data?.errors?.[0]?.msg || "AI content could not be generated. Try again.";
 };
 
@@ -71,8 +79,10 @@ const AssistantPage = () => {
     try {
       const data = await generateAIContent(type, payload);
       setResults((current) => ({ ...current, [type]: data }));
+      return true;
     } catch (requestError) {
       setError(getErrorMessage(requestError));
+      return false;
     } finally {
       setLoadingType("");
     }
@@ -85,7 +95,11 @@ const AssistantPage = () => {
     }
 
     for (const [type] of contentTypes) {
-      await handleGenerate(type);
+      const generated = await handleGenerate(type);
+
+      if (!generated) {
+        break;
+      }
     }
   };
 

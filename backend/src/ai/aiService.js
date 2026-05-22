@@ -44,13 +44,13 @@ const callOpenAIWithRetry = async ({ type, product, attempts = 2 }) => {
   }
 
   const status = lastError?.status || lastError?.statusCode;
-  const message = status === 401
+  const message = status === 401 || status === 403
     ? "OpenAI API key is invalid or unauthorized"
     : status === 429
       ? "OpenAI rate limit reached. Try again shortly"
       : "AI content generation failed";
   const serviceError = new Error(message);
-  serviceError.statusCode = status && status < 500 ? status : 502;
+  serviceError.statusCode = status === 429 ? 429 : 502;
   throw serviceError;
 };
 

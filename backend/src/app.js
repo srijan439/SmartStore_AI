@@ -48,7 +48,7 @@ app.use("/api/products", requireAuth, productsRoutes);
 app.use("/api/inventory", requireAuth, inventoryRoutes);
 app.use("/api/analytics", requireAuth, analyticsRoutes);
 app.use("/api/assistant", requireAuth, assistantRoutes);
-app.use("/api/ai", requireAuth, aiRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

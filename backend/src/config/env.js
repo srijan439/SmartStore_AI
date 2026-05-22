@@ -6,4 +6,4 @@ const currentFile = fileURLToPath(import.meta.url);
 const currentDirectory = path.dirname(currentFile);
 const envPath = path.resolve(currentDirectory, "../../.env");
 
-dotenv.config({ path: envPath });
+dotenv.config({ path: envPath, override: true });

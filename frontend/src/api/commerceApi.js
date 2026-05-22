@@ -30,6 +30,21 @@ export const getAnalytics = async () => {
   return response.data.data;
 };
 
+export const getRevenueAnalytics = async () => {
+  const response = await apiClient.get("/analytics/revenue");
+  return response.data.data;
+};
+
+export const getProductAnalytics = async () => {
+  const response = await apiClient.get("/analytics/products");
+  return response.data.data;
+};
+
+export const getInventoryAnalytics = async () => {
+  const response = await apiClient.get("/analytics/inventory");
+  return response.data.data;
+};
+
 export const getAssistantInsights = async () => {
   const response = await apiClient.get("/assistant/insights");
   return response.data.data;
