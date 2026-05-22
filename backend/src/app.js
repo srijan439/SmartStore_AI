@@ -4,6 +4,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 
+import aiRoutes from "./routes/ai.routes.js";
 import analyticsRoutes from "./routes/analytics.routes.js";
 import assistantRoutes from "./routes/assistant.routes.js";
 import authRoutes from "./routes/auth.routes.js";
@@ -35,7 +36,8 @@ app.get("/api", (req, res) => {
       products: "/api/products",
       inventory: "/api/inventory",
       analytics: "/api/analytics",
-      assistant: "/api/assistant"
+      assistant: "/api/assistant",
+      ai: "/api/ai"
     }
   });
 });
@@ -46,6 +48,7 @@ app.use("/api/products", requireAuth, productsRoutes);
 app.use("/api/inventory", requireAuth, inventoryRoutes);
 app.use("/api/analytics", requireAuth, analyticsRoutes);
 app.use("/api/assistant", requireAuth, assistantRoutes);
+app.use("/api/ai", requireAuth, aiRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
