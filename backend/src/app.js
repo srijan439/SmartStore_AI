@@ -25,6 +25,21 @@ app.use(
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
 
+app.get("/api", (req, res) => {
+  res.json({
+    success: true,
+    message: "SmartStore AI API is running",
+    endpoints: {
+      health: "/api/health",
+      auth: "/api/auth",
+      products: "/api/products",
+      inventory: "/api/inventory",
+      analytics: "/api/analytics",
+      assistant: "/api/assistant"
+    }
+  });
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/health", healthRoutes);
 app.use("/api/products", requireAuth, productsRoutes);

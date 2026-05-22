@@ -47,7 +47,7 @@ const InventoryPage = () => {
               <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
                 <div>
                   <p className="font-medium">{item.name}</p>
-                  <p className="text-xs text-slate-500">{item.sku} · Reorder at {item.reorderPoint}</p>
+                  <p className="text-xs text-slate-500">{item.sku} &middot; Reorder at {item.reorderPoint}</p>
                 </div>
                 <StatusBadge tone={item.stock <= item.reorderPoint ? "warning" : "success"}>{item.status}</StatusBadge>
               </div>

@@ -1,4 +1,4 @@
-import { BarChart3, Boxes, LayoutDashboard, Package, Settings, Sparkles } from "lucide-react";
+import { BarChart3, Boxes, LayoutDashboard, Package, Settings, Sparkles, X } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const navItems = [
@@ -10,16 +10,16 @@ const navItems = [
   { label: "Settings", path: "/settings", icon: Settings }
 ];
 
-const Sidebar = () => {
+const SidebarContent = ({ onNavigate }) => {
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-slate-200 bg-white px-5 py-6 lg:block">
+    <>
       <div className="flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-ink text-white">
+        <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-cyan-400 text-slate-950">
           <Sparkles size={22} />
         </div>
         <div>
-          <p className="text-lg font-bold">SmartStore AI</p>
-          <p className="text-sm text-slate-500">Admin assistant</p>
+          <p className="text-lg font-bold text-white">SmartStore AI</p>
+          <p className="text-sm text-slate-400">Admin assistant</p>
         </div>
       </div>
 
@@ -30,12 +30,13 @@ const Sidebar = () => {
             <NavLink
               key={item.path}
               to={item.path}
+              onClick={onNavigate}
               className={({ isActive }) =>
                 [
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition",
                   isActive
-                    ? "bg-ink text-white shadow-soft"
-                    : "text-slate-600 hover:bg-slate-100 hover:text-ink"
+                    ? "bg-cyan-400 text-slate-950 shadow-soft"
+                    : "text-slate-400 hover:bg-slate-900 hover:text-white"
                 ].join(" ")
               }
             >
@@ -45,7 +46,34 @@ const Sidebar = () => {
           );
         })}
       </nav>
-    </aside>
+    </>
+  );
+};
+
+const Sidebar = ({ isOpen = false, onClose }) => {
+  return (
+    <>
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-slate-800 bg-slate-950 px-5 py-6 lg:block">
+        <SidebarContent />
+      </aside>
+
+      {isOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <button type="button" className="absolute inset-0 bg-slate-950/75" aria-label="Close menu" onClick={onClose} />
+          <aside className="relative h-full w-72 border-r border-slate-800 bg-slate-950 px-5 py-6 shadow-soft">
+            <button
+              type="button"
+              onClick={onClose}
+              className="absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-800 text-slate-300"
+              aria-label="Close menu"
+            >
+              <X size={18} />
+            </button>
+            <SidebarContent onNavigate={onClose} />
+          </aside>
+        </div>
+      )}
+    </>
   );
 };
 

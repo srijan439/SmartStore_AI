@@ -70,11 +70,12 @@ export const getProducts = () => products;
 export const addProduct = (product) => {
   const stock = Number(product.stock || 0);
   const reorderPoint = Number(product.reorderPoint || 10);
+  const sku = String(product.sku).trim().toUpperCase();
   const nextProduct = {
     id: `prd-${Date.now()}`,
-    name: product.name,
-    sku: product.sku,
-    category: product.category,
+    name: String(product.name).trim(),
+    sku,
+    category: String(product.category).trim(),
     price: Number(product.price || 0),
     stock,
     reorderPoint,

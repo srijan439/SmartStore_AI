@@ -1,7 +1,7 @@
 const statusStyles = {
-  success: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-  warning: "bg-amber-50 text-amber-700 ring-amber-200",
-  muted: "bg-slate-100 text-slate-600 ring-slate-200"
+  success: "bg-emerald-500/10 text-emerald-300 ring-emerald-500/30",
+  warning: "bg-amber-500/10 text-amber-300 ring-amber-500/30",
+  muted: "bg-slate-700/50 text-slate-300 ring-slate-600"
 };
 
 const StatusBadge = ({ tone = "muted", children }) => {
