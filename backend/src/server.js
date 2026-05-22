@@ -1,5 +1,6 @@
-import dns from "node:dns/promises";
-import dotenv from "dotenv";
+import "./config/env.js";
+
+import dns from "node:dns";
 
 import app from "./app.js";
 import { connectDatabase } from "./config/database.js";
@@ -10,8 +11,6 @@ try {
 } catch (dnsError) {
   console.warn("Could not set custom DNS servers for MongoDB connection:", dnsError.message);
 }
-
-dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 

@@ -1,14 +1,21 @@
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
-import { findUserById, toPublicUser } from "../data/users.js";
+import User from "../models/User.js";
 
-const getJwtSecret = () => process.env.JWT_SECRET || "smartstore-dev-secret";
+const getJwtSecret = () => {
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is required");
+  }
 
-export const signAuthToken = (user) => {
-  return jwt.sign({ userId: user.id }, getJwtSecret(), { expiresIn: "7d" });
+  return process.env.JWT_SECRET;
 };
 
-export const requireAuth = (req, res, next) => {
+export const signAuthToken = (user) => {
+  return jwt.sign({ userId: user._id.toString() }, getJwtSecret(), { expiresIn: "7d" });
+};
+
+export const requireAuth = async (req, res, next) => {
   const header = req.headers.authorization || "";
   const token = header.startsWith("Bearer ") ? header.slice(7) : null;
 
@@ -17,16 +24,24 @@ export const requireAuth = (req, res, next) => {
   }
 
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ success: false, message: "Database connection is required for authentication" });
+    }
+
     const payload = jwt.verify(token, getJwtSecret());
-    const user = findUserById(payload.userId);
+    const user = await User.findById(payload.userId);
 
     if (!user) {
       return res.status(401).json({ success: false, message: "User session is no longer valid" });
     }
 
-    req.user = toPublicUser(user);
+    req.user = user.toPublicJSON();
     return next();
   } catch (error) {
-    return res.status(401).json({ success: false, message: "Invalid or expired authentication token" });
+    if (error.name === "JsonWebTokenError" || error.name === "TokenExpiredError") {
+      return res.status(401).json({ success: false, message: "Invalid or expired authentication token" });
+    }
+
+    return next(error);
   }
 };
