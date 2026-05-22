@@ -6,6 +6,7 @@ const navItems = [
   { label: "Products", path: "/products", icon: Package },
   { label: "Analytics", path: "/analytics", icon: BarChart3 },
   { label: "Inventory", path: "/inventory", icon: Boxes },
+  { label: "AI Assistant", path: "/assistant", icon: Sparkles },
   { label: "Settings", path: "/settings", icon: Settings }
 ];
 

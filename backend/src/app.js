@@ -2,7 +2,13 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 
+import analyticsRoutes from "./routes/analytics.routes.js";
+import assistantRoutes from "./routes/assistant.routes.js";
+import authRoutes from "./routes/auth.routes.js";
 import healthRoutes from "./routes/health.routes.js";
+import inventoryRoutes from "./routes/inventory.routes.js";
+import productsRoutes from "./routes/products.routes.js";
+import { requireAuth } from "./middleware/auth.middleware.js";
 import { notFoundHandler, errorHandler } from "./middleware/error.middleware.js";
 
 const app = express();
@@ -17,7 +23,12 @@ app.use(
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
 
+app.use("/api/auth", authRoutes);
 app.use("/api/health", healthRoutes);
+app.use("/api/products", requireAuth, productsRoutes);
+app.use("/api/inventory", requireAuth, inventoryRoutes);
+app.use("/api/analytics", requireAuth, analyticsRoutes);
+app.use("/api/assistant", requireAuth, assistantRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

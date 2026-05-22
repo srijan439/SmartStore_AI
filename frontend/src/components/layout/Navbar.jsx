@@ -1,6 +1,17 @@
-import { Bell, Menu, Search, UserRound } from "lucide-react";
+import { Bell, LogOut, Menu, Search, UserRound } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+import { useAuth } from "../../context/AuthContext.jsx";
 
 const Navbar = () => {
+  const auth = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    auth.logout();
+    navigate("/auth", { replace: true });
+  };
+
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -25,8 +36,20 @@ const Navbar = () => {
           <button className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-50" aria-label="Notifications">
             <Bell size={18} />
           </button>
+          <div className="hidden text-right sm:block">
+            <p className="text-sm font-medium text-ink">{auth.user?.name || "Admin"}</p>
+            <p className="text-xs text-slate-500">{auth.user?.role || "User"}</p>
+          </div>
           <button className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-ink text-white" aria-label="Account">
             <UserRound size={18} />
+          </button>
+          <button
+            onClick={handleLogout}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-50"
+            aria-label="Log out"
+            type="button"
+          >
+            <LogOut size={18} />
           </button>
         </div>
       </div>
