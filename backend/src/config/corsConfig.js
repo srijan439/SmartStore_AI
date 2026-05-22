@@ -7,7 +7,18 @@ const parseOrigins = (value) => {
     .filter(Boolean);
 };
 
-export const allowedOrigins = parseOrigins(process.env.CLIENT_URL || "http://localhost:5173");
+const defaultOrigins = [
+  "http://localhost:5173",
+  "https://smart-store-ai-alpha.vercel.app"
+];
+
+export const allowedOrigins = [
+  ...new Set([
+    ...defaultOrigins,
+    ...parseOrigins(process.env.CLIENT_URL),
+    ...parseOrigins(process.env.CORS_ORIGINS)
+  ])
+];
 
 export const corsConfig = {
   origin(origin, callback) {
