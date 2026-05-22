@@ -25,6 +25,41 @@ export const getInventory = async () => {
   return response.data.data;
 };
 
+export const getInventorySummary = async (params = {}) => {
+  const response = await apiClient.get("/inventory/summary", { params });
+  return response.data.data;
+};
+
+export const getInventoryStatistics = async () => {
+  const response = await apiClient.get("/inventory/statistics");
+  return response.data.data;
+};
+
+export const getLowStockProducts = async () => {
+  const response = await apiClient.get("/inventory/low-stock");
+  return response.data.data;
+};
+
+export const getOutOfStockProducts = async () => {
+  const response = await apiClient.get("/inventory/out-of-stock");
+  return response.data.data;
+};
+
+export const getRestockRecommendations = async () => {
+  const response = await apiClient.get("/inventory/restock-recommendations");
+  return response.data.data;
+};
+
+export const getInventoryAlerts = async () => {
+  const response = await apiClient.get("/inventory/alerts");
+  return response.data.data;
+};
+
+export const updateInventoryQuantity = async (id, stock) => {
+  const response = await apiClient.patch(`/inventory/${id}/quantity`, { stock });
+  return response.data.data;
+};
+
 export const getAnalytics = async () => {
   const response = await apiClient.get("/analytics");
   return response.data.data;
@@ -47,6 +82,13 @@ export const getInventoryAnalytics = async () => {
 
 export const getAssistantInsights = async () => {
   const response = await apiClient.get("/assistant/insights");
+  return response.data.data;
+};
+
+export const getAIInsights = async () => {
+  const response = await apiClient.get("/ai-insights", {
+    timeout: 45000
+  });
   return response.data.data;
 };
 

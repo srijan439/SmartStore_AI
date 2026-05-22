@@ -1,4 +1,4 @@
-import { BarChart3, Boxes, LayoutDashboard, Package, Settings, Sparkles, X } from "lucide-react";
+import { BarChart3, Boxes, BrainCircuit, LayoutDashboard, Package, Settings, Sparkles, X } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const navItems = [
@@ -6,6 +6,7 @@ const navItems = [
   { label: "Products", path: "/products", icon: Package },
   { label: "Analytics", path: "/analytics", icon: BarChart3 },
   { label: "Inventory", path: "/inventory", icon: Boxes },
+  { label: "AI Insights", path: "/ai-insights", icon: BrainCircuit },
   { label: "AI Assistant", path: "/assistant", icon: Sparkles },
   { label: "Settings", path: "/settings", icon: Settings }
 ];
